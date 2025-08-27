@@ -3,9 +3,9 @@ from fastapi import FastAPI, Query
 from pydantic import BaseModel
 from typing import Optional, Dict, Any
 import httpx
-from .utils import load_config, to_float
-from .fetchers import CFBDClient, OddsClient
-from .model import (
+from utils import load_config, to_float
+from fetchers import CFBDClient, OddsClient
+from model import (
     apply_injuries, apply_situational, apply_matchup_efficiency,
     apply_explosiveness, apply_weather_total_adj, decision_from_edges,
     select_book_line, normalize_team_name
