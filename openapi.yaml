@@ -1,0 +1,53 @@
+openapi: 3.1.0
+info:
+  title: Ken CFB Middleware
+  version: "1.0.0"
+servers:
+  - url: https://YOUR_DEPLOY_URL
+paths:
+  /analyze:
+    get:
+      operationId: analyzeGame
+      summary: Merge live odds & stats and apply Ken's handicapping config
+      parameters:
+        - in: query
+          name: home
+          required: true
+          schema: {type: string}
+          description: Home team name
+        - in: query
+          name: away
+          required: true
+          schema: {type: string}
+          description: Away team name
+        - in: query
+          name: date
+          required: true
+          schema: {type: string, example: "2025-11-08"}
+          description: Game date (YYYY-MM-DD)
+      responses:
+        "200":
+          description: Model output with lines, edges, and recommended bets
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  game: {type: object}
+                  lines: {type: object}
+                  model: {type: object}
+                  decisions: {type: object}
+  /health:
+    get:
+      operationId: health
+      summary: Health check
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string

@@ -1,0 +1,82 @@
+markets:
+  spread: true
+  totals: true
+  moneyline: true
+  first_half: false
+  live: false
+
+risk:
+  edge_threshold_spread_pts: 2.0
+  edge_threshold_total_pts: 2.0
+  big_edge_spread_pts: 4.0
+  big_edge_total_pts: 3.0
+  staking: tiered_units
+  unit_rules:
+    small: {units: 1, spread_edge_min: 2.0, total_edge_min: 2.0}
+    big:   {units: 2, spread_edge_min: 4.0, total_edge_min: 3.0}
+
+scope:
+  allow_fbs: true
+  allow_fcs: false
+  line_source: single_book
+
+weights:
+  injuries: highest
+  situational: high
+  matchup_efficiency: high
+  ratings_delta: medium_low
+  weather: trigger_only
+  sides_trends: none
+  totals_trends: tie_breaker
+
+injuries:
+  qb1_out_pts: 7.0
+  qb1_limited_pts: 3.0
+  qb2_good_addback_pts: 3.0
+  rb1_out_pts: 3.0
+  wr1_out_pts: 3.0
+  ol_top_out_pts: 3.0
+  important_starter_out_pts: 3.0
+  cluster_same_unit_threshold: 2
+  cluster_same_unit_bonus_pts: 2.0
+
+situational:
+  bye_week_bonus_pts: 1.5
+  trap_game_penalty_pts_low: 1.0
+  trap_game_penalty_pts_high: 1.5
+  b2b_road_penalty_pts: 0.5
+  longhaul_altitude_penalty_pts: 0.5
+
+matchups:
+  max_nudge_pts: 2.0
+  factors: [rush_o_vs_rush_d, pass_o_vs_pass_d, finishing_drives, havoc_vs_ball_security]
+
+explosiveness:
+  use_big_plays: true
+  metrics: [isoPPP, epa_explosive_pass, epa_explosive_run]
+  boost_pts_moderate: 1.5
+  boost_pts_extreme: 2.5
+  penalty_pts_def_leaky: -1.5
+  notes: >
+    Apply on top of matchup efficiency. Use as a tie-breaker when spread edge is thin (1.5–2.5).
+
+weather:
+  trigger_only: true
+  wind_threshold_mph: 12
+  wind_total_adjust_low: -1.5
+  wind_total_adjust_high: -2.5
+  precip_total_adjust_low: -1.0
+  precip_total_adjust_high: -2.0
+
+totals_extremes:
+  low_total_threshold: 41
+  high_total_threshold: 63
+  extreme_edge_min_pts: 2.0
+  boost_confidence_one_tier: true
+
+home_field:
+  base_hfa_pts: 2.0
+
+trends:
+  sides_ats_weight: 0.0
+  totals_trend_use_as_tiebreaker: true
