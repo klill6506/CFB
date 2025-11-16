@@ -32,22 +32,41 @@ app = FastAPI(title="Ken CFB Middleware", version="1.0.0")
 
 # ---------- Simple status endpoints ----------
 
+CFG = load_config(CFG_PATH)
+
+app = FastAPI(title="Ken CFB Middleware", version="1.0.0")
+
 @app.get("/")
 async def root():
     """
     Simple root endpoint so hitting the base URL doesn't 404.
-    This is what you'll see at https://cfb-9brz.onrender.com/
     """
     return {
         "status": "ok",
         "message": "Ken CFB Middleware is running",
         "endpoints": {
             "health": "/health",
-            "analyze": "/analyze?home=Georgia&away=Alabama&date=2025-11-08",
+            "analyze_example": "/analyze?home=Georgia&away=Alabama&date=2025-11-08",
         },
     }
 
+@app.get("/health")
+async def health():
+    return {"status": "ok"}
 
+
+class InjuryPayload(BaseModel):
+    qb1_out: Optional[bool] = False
+    qb1_limited: Optional[bool] = False
+    qb2_good: Optional[bool] = False
+    rb1_out: Optional[int] = 0
+    wr1_out: Optional[int] = 0
+    ol_top_out: Optional[int] = 0
+    important_starters_out: Optional[int] = 0
+    ol_out_count: Optional[int] = 0
+    db_out_count: Optional[int] = 0
+    wr_out_count: Optional[int] = 0
+    dl_out_count: Optional[int] = 0
 @app.get("/health")
 async def health():
     """
