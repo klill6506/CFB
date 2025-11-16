@@ -34,7 +34,6 @@ app = FastAPI(title="Ken CFB Middleware", version="1.0.0")
 
 # ---------- Simple status endpoints ----------
 
-
 @app.get("/")
 async def root():
     """
@@ -59,7 +58,6 @@ async def health():
 
 
 # ---------- Request/response models ----------
-
 
 class InjuryPayload(BaseModel):
     qb1_out: Optional[bool] = False
@@ -94,7 +92,6 @@ class AnalyzeResponse(BaseModel):
 
 
 # ---------- Core analyze endpoint ----------
-
 
 @app.get("/analyze", response_model=AnalyzeResponse)
 async def analyze_game(
