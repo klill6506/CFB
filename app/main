@@ -1,8 +1,9 @@
 import os
+from typing import Optional, Dict, Any
+
+import httpx
 from fastapi import FastAPI, Query
 from pydantic import BaseModel
-from typing import Optional, Dict, Any
-import httpx
 
 from .utils import load_config, to_float
 from .fetchers import CFBDClient, OddsClient
@@ -20,6 +21,7 @@ from .model import (
 # Optional .env loading (safe if python-dotenv isn't installed)
 try:
     from dotenv import load_dotenv
+
     load_dotenv()
 except Exception:
     pass
@@ -32,9 +34,6 @@ app = FastAPI(title="Ken CFB Middleware", version="1.0.0")
 
 # ---------- Simple status endpoints ----------
 
-CFG = load_config(CFG_PATH)
-
-app = FastAPI(title="Ken CFB Middleware", version="1.0.0")
 
 @app.get("/")
 async def root():
@@ -50,23 +49,7 @@ async def root():
         },
     }
 
-@app.get("/health")
-async def health():
-    return {"status": "ok"}
 
-
-class InjuryPayload(BaseModel):
-    qb1_out: Optional[bool] = False
-    qb1_limited: Optional[bool] = False
-    qb2_good: Optional[bool] = False
-    rb1_out: Optional[int] = 0
-    wr1_out: Optional[int] = 0
-    ol_top_out: Optional[int] = 0
-    important_starters_out: Optional[int] = 0
-    ol_out_count: Optional[int] = 0
-    db_out_count: Optional[int] = 0
-    wr_out_count: Optional[int] = 0
-    dl_out_count: Optional[int] = 0
 @app.get("/health")
 async def health():
     """
@@ -76,6 +59,7 @@ async def health():
 
 
 # ---------- Request/response models ----------
+
 
 class InjuryPayload(BaseModel):
     qb1_out: Optional[bool] = False
@@ -110,6 +94,7 @@ class AnalyzeResponse(BaseModel):
 
 
 # ---------- Core analyze endpoint ----------
+
 
 @app.get("/analyze", response_model=AnalyzeResponse)
 async def analyze_game(
@@ -147,7 +132,9 @@ async def analyze_game(
                 event = e
                 break
 
-        selected_book = select_book_line(event, primary_book_kw, allowed_books) if event else {}
+        selected_book = (
+            select_book_line(event, primary_book_kw, allowed_books) if event else {}
+        )
 
         spread_line = None
         spread_odds = None
@@ -180,7 +167,9 @@ async def analyze_game(
             sp_map = {(item.get("team", "") or "").lower(): item for item in sp}
             h_sp = sp_map.get(home.lower(), {})
             a_sp = sp_map.get(away.lower(), {})
-            ratings_delta = (h_sp.get("rating", 0.0) or 0.0) - (a_sp.get("rating", 0.0) or 0.0)
+            ratings_delta = (h_sp.get("rating", 0.0) or 0.0) - (
+                a_sp.get("rating", 0.0) or 0.0
+            )
         except Exception:
             # Silent fallback if SP+ is unavailable
             pass
@@ -204,7 +193,9 @@ async def analyze_game(
         model_total = 52.0  # baseline, adjusted by weather/etc
 
         # Apply situational / matchup / explosiveness / injuries
-        model_line = apply_situational(model_line, (situational.dict() if situational else {}), CFG)
+        model_line = apply_situational(
+            model_line, (situational.dict() if situational else {}), CFG
+        )
         model_line = apply_matchup_efficiency(model_line, matchup, CFG)
         model_line = apply_explosiveness(
             model_line,
@@ -237,12 +228,16 @@ async def analyze_game(
             2,
         )
 
-        decisions = decision_from_edges(edges["spread_edge_pts"], edges["total_edge_pts"], CFG)
+        decisions = decision_from_edges(
+            edges["spread_edge_pts"], edges["total_edge_pts"], CFG
+        )
 
         return {
             "game": game_info,
             "lines": {
-                "book": selected_book.get("title") or selected_book.get("key") or "unknown",
+                "book": selected_book.get("title")
+                or selected_book.get("key")
+                or "unknown",
                 "spread_home": spread_line,
                 "spread_odds_home": spread_odds,
                 "total": total_line,
