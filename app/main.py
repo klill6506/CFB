@@ -55,7 +55,7 @@ Health check used by Render (and for your own sanity checks).
 “””
 return {“status”: “ok”}
 
-@app.get(”/scores”)
+@app.get("/scores")
 async def get_scores(
 year: Optional[int] = None,
 week: Optional[int] = None,
