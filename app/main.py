@@ -33,7 +33,7 @@ app = FastAPI(title="Ken CFB Middleware", version="1.0.0")
 
 # ––––– Simple status endpoints –––––
 
-@app.get(”/”)
+@app.get("/")
 async def root():
 “””
 Simple root endpoint so hitting the base URL doesn’t 404.
