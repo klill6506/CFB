@@ -26,7 +26,7 @@ load_dotenv()
 except Exception:
 pass
 
-CFG_PATH = os.path.join(os.path.dirname__file__),"config.yam")
+CFG_PATH = os.path.join(os.path.dir(name__file__),"config.yam")
 CFG = load_config(CFG_PATH)
 
 app = FastAPI(title=“Ken CFB Middleware”, version=“1.0.0”)
