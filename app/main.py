@@ -56,7 +56,6 @@ async def health():
     """
     return {"status": "ok"}
 
-
 @app.get("/scores")
 async def get_scores(
     year: Optional[int] = None,
@@ -64,11 +63,10 @@ async def get_scores(
     team: Optional[str] = None,
 ):
     """
-    DEBUG VERSION: Returns raw CFBD data to see actual field names.
+    Get CFB game scores with proper field mapping.
     """
     from datetime import datetime
     
-    # Default to current year if not provided
     if year is None:
         year = datetime.now().year
     
@@ -76,7 +74,6 @@ async def get_scores(
     
     async with httpx.AsyncClient(timeout=30) as client:
         try:
-            # Get games from CFBD
             params = {"year": year, "seasonType": "regular"}
             if week:
                 params["week"] = week
@@ -92,21 +89,28 @@ async def get_scores(
             r.raise_for_status()
             games = r.json()
             
-            # Return raw CFBD data to debug field names
+            formatted_games = []
+            for game in games:
+                formatted_games.append({
+                    "week": game.get("week"),
+                    "date": game.get("startDate"),
+                    "home_team": game.get("homeTeam"),
+                    "home_score": game.get("homePoints"),
+                    "away_team": game.get("awayTeam"),
+                    "away_score": game.get("awayPoints"),
+                    "completed": game.get("completed", False),
+                })
+            
             return {
-                "debug_mode": True,
                 "year": year,
                 "week": week,
                 "team": team,
-                "total_games": len(games),
-                "first_two_games_raw": games[:2] if games else [],
-                "message": "This is debug mode - showing raw CFBD API response"
+                "games": formatted_games,
+                "total_games": len(formatted_games)
             }
             
         except Exception as e:
-            return {
-                "error": str(e),
-                "message": "Failed to fetch scores. Check your CFBD_KEY environment variable."
+            return {"error": str(e)}
             }
 
 
